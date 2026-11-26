@@ -175,6 +175,7 @@
 
   /* contact */
   .contact{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,360px),1fr));gap:60px;align-items:start}
+  @media (min-width:900px){.cta-big{position:sticky!important;top:110px}}
   .cta-big{position:relative;padding:48px 40px;background:linear-gradient(135deg,var(--deep),#0B1A23);overflow:hidden}
   .cta-big::after{content:"";position:absolute;right:-60px;top:-30px;width:260px;height:120%;background:var(--accent);opacity:.18;transform:skewX(-30deg)}
   .cta-big h3{position:relative;font-size:clamp(30px,3.4vw,42px);font-weight:800;text-transform:uppercase;margin-bottom:14px}
@@ -186,6 +187,18 @@
   .row span:first-child{color:var(--dim);font-family:var(--display);letter-spacing:.14em;text-transform:uppercase;font-size:14px}
   .row span:last-child{text-align:right}
   .social{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+  .soc{display:inline-flex;align-items:center;gap:12px;min-height:52px;padding:0 22px 0 8px;background:var(--panel);border:1px solid var(--line2);color:var(--text);text-decoration:none;font-family:var(--display);font-weight:600;font-size:15px;letter-spacing:.1em;text-transform:uppercase;transition:border-color .3s,transform .3s,background .3s}
+  .soc .ico{width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:var(--bg);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);transition:background .3s,color .3s;color:var(--accent2)}
+  .soc:hover{border-color:var(--accent);transform:translateY(-3px);color:#fff}
+  .soc:hover .ico{background:var(--accent);color:#fff}
+  .soc-mini{display:flex;gap:10px}
+  .soc-mini a{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line2);color:var(--muted);transition:color .3s,border-color .3s,background .3s,transform .3s}
+  .soc-mini a:hover{color:#fff;border-color:var(--accent);background:var(--accent);transform:translateY(-3px)}
+  .hero-soc{position:absolute;left:24px;bottom:30px;z-index:2;display:flex;flex-direction:column;gap:10px}
+  .hero-soc a{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid var(--line);background:rgba(6,7,12,.5);transition:color .3s,border-color .3s,transform .3s}
+  .hero-soc a:hover{color:var(--accent2);border-color:var(--accent);transform:translateX(3px)}
+  .hero-soc::after{content:"";width:1px;height:50px;margin:4px auto 0;background:linear-gradient(var(--line2),transparent)}
+  @media (max-width:1300px){.hero-soc{display:none}}
   .map{position:relative;margin-top:26px;border:1px solid var(--line2);overflow:hidden;background:var(--panel)}
   .map[hidden],.nav-btns[hidden]{display:none}
   .map iframe{width:100%;height:340px;border:0;display:block;filter:grayscale(1) invert(.92) contrast(1.15) brightness(.9) sepia(.25) hue-rotate(160deg);transition:filter .6s}
@@ -272,6 +285,7 @@
     </div>
     <div class="hero-photo" id="heroPhoto"></div>
   </div>
+  <div class="hero-soc" id="heroSoc" aria-label="Rețele sociale"></div>
   <div class="scroll-cue" aria-hidden="true"></div>
 </section>
 
@@ -331,6 +345,7 @@
 <footer>
   <div class="wrap foot-in">
     <img src="img/logo-full.webp" alt="Finesse Detailing – Where every detail matters">
+    <div class="soc-mini" id="footSoc" aria-label="Rețele sociale"></div>
     <span>© <span id="year"></span> Finesse Detailing</span>
   </div>
 </footer>
@@ -355,6 +370,7 @@ const CONFIG = {
   lat: 45.7519377, lng: 21.0920656,   // locația exactă de pe Google Maps
   whatsapp:  '40730284922',       // 0730 284 922 – 40 + numărul fără 0 din față
   hoursText: [['Luni – Vineri','09:00 – 19:00'], ['Sâmbătă','09:00 – 15:00'], ['Duminică','Închis']],
+  // link-urile spre paginile lor (gol = butonul duce la Contact până le completezi)
   instagram: '', facebook: '', tiktok: '',
   heroPhoto: '',                  // ex: 'poze/hero.jpg' – o mașină lucioasă, orizontal
   services: [
@@ -456,8 +472,16 @@ $('products').innerHTML = CONFIG.products.map(p => `<div class="prod">
 // contact
 $('info').innerHTML = [['Locație', CONFIG.address || CONFIG.city], ...CONFIG.hoursText]
   .map(([a, b]) => `<div class="row"><span>${esc(a)}</span><span>${esc(b)}</span></div>`).join('');
-const soc = [['Instagram', CONFIG.instagram], ['Facebook', CONFIG.facebook], ['TikTok', CONFIG.tiktok]].filter(([, u]) => u);
-$('social').innerHTML = soc.map(([n, u]) => `<a class="btn-ghost" href="${esc(u)}" target="_blank" rel="noopener">${n}</a>`).join('');
+const ICONS = {
+  Instagram: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  Facebook:  '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8.5V6.8c0-.8.5-1.3 1.3-1.3H17V2.2c-.4-.1-1.6-.2-2.9-.2-2.9 0-4.6 1.7-4.6 4.8v1.7H6.6V12h2.9v10h4.5V12h2.9l.5-3.5H14z"/></svg>',
+  TikTok:    '<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 2h-3.4v13.3a2.9 2.9 0 1 1-2.9-2.9c.3 0 .6 0 .9.1V9a6.4 6.4 0 1 0 5.4 6.3V8.6a8.2 8.2 0 0 0 4.4 1.3V6.5a4.8 4.8 0 0 1-4.4-4.5z"/></svg>'
+};
+const SOC = [['Instagram', CONFIG.instagram], ['Facebook', CONFIG.facebook], ['TikTok', CONFIG.tiktok]];
+const socHref = u => u ? `href="${esc(u)}" target="_blank" rel="noopener"` : 'href="#contact"';
+$('social').innerHTML = SOC.map(([n, u]) => `<a class="soc" ${socHref(u)}><span class="ico">${ICONS[n]}</span>${n}</a>`).join('');
+$('footSoc').innerHTML = SOC.map(([n, u]) => `<a ${socHref(u)} aria-label="${n}">${ICONS[n]}</a>`).join('');
+$('heroSoc').innerHTML = SOC.map(([n, u]) => `<a ${socHref(u)} aria-label="${n}">${ICONS[n]}</a>`).join('');
 if (CONFIG.lat || CONFIG.address) {
   const q = CONFIG.lat ? CONFIG.lat + ',' + CONFIG.lng : encodeURIComponent(CONFIG.address);
   $('map').hidden = false;
@@ -479,6 +503,7 @@ mark([...document.querySelectorAll('#ba figure')], .12);
 mark([...document.querySelectorAll('#gallery > *')], .06);
 mark([...document.querySelectorAll('#products .prod')], .06);
 mark([...document.querySelectorAll('#info .row')], .05);
+mark([...document.querySelectorAll('#social .soc')], .08);
 if ('IntersectionObserver' in window && !reduce) {
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12, rootMargin: '0px 0px -40px 0px' });
   document.querySelectorAll('[data-reveal]').forEach(el => io.observe(el));
